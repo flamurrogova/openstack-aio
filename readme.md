@@ -309,7 +309,8 @@ openstack server create \\
     demo1
 ```
 
-we can open Horizon (openstack GUI) and get console login to our instance 
+We can open Horizon (openstack GUI) and get console login to our instance.  
+Also, on network node (our aio node) we can list our virtual router, implemented as Linux network namespace,
 
 ```
 vagrant@aio:~$ sudo ip netns ls
