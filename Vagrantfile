@@ -12,8 +12,8 @@ nodes = [
   },
   { 
     :hostname => "aio", 
-    :cpu => 4,
-    :ram => 10240,
+    :cpu => 24,
+    :ram => 32768,
     :api_ip => "10.10.30.50",
     :neutron_ip => "192.168.100.50",
     :management_ip => "10.10.10.51"
@@ -24,7 +24,7 @@ nodes = [
 Vagrant.configure("2") do |config|
 
   config.ssh.insert_key = false
-  config.vm.box = "generic/ubuntu2004"
+  config.vm.box = "generic/ubuntu2204"
   config.vm.synced_folder ".", "/vagrant", type: "rsync"
 
   nodes.each do |node|
@@ -34,6 +34,7 @@ Vagrant.configure("2") do |config|
       cfg.vm.provider :libvirt do |libvirt|
         libvirt.cpus = node[:cpu]
         libvirt.memory = node[:ram]
+        libvirt.storage_pool_name = "IMAGES-1"
       end
       
       cfg.vm.hostname = node[:hostname]
@@ -42,6 +43,9 @@ Vagrant.configure("2") do |config|
       if node[:hostname] == "aio"
         cfg.vm.network :private_network, :ip => node[:api_ip]
         cfg.vm.network :private_network, :ip => node[:neutron_ip]
+        cfg.vm.provider :libvirt do |lv|
+          lv.storage :file, :size => '300G'
+        end
       end
 
       
