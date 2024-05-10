@@ -8,7 +8,6 @@ set -o pipefail
 
 
 #echo -n "\n\nconfigure apt-cacher\n" && echo "Acquire::http::Proxy \"http://192.168.1.226:3142\";" | sudo tee /etc/apt/apt.conf.d/00aptproxy
-#echo -n "\n\nconfigure apt-cacher\n" && echo "Acquire::http::Proxy \"http://10.10.10.17:3142\";" | sudo tee /etc/apt/apt.conf.d/00aptproxy
 
 sudo apt update
 #sudo apt-get remove docker-ce docker.io containerd runc
