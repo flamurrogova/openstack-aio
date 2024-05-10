@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-# install kolla-openstack on ubuntu 2004
+# install kolla-openstack on ubuntu 2204
 
 set -e
 set -u
 set -o pipefail
 
 VENV_BASE=/opt/venv
-OPENSTACK_RELEASE=yoga
+OPENSTACK_RELEASE=2023.1
 
 # uncomment/configure this line if you use apt cache
 #echo -n "\n\nconfigure apt-cacher\n" && echo "Acquire::http::Proxy \"http://192.168.1.227:3142\";" | sudo tee /etc/apt/apt.conf.d/00aptproxy
@@ -27,17 +27,14 @@ sudo apt install --yes python3-venv
 sudo mkdir -p $VENV_BASE/$OPENSTACK_RELEASE
 sudo chown -R $USER:$USER $VENV_BASE/$OPENSTACK_RELEASE
 
-
 python3 -m venv $VENV_BASE/$OPENSTACK_RELEASE
 source $VENV_BASE/$OPENSTACK_RELEASE/bin/activate
-
 
 # 3. Ensure the latest version of pip is installed:
 pip install -U pip
 
-# 4. Install Ansible. Kolla Ansible requires at least Ansible 4 and supports up to 5. - wallaby
-pip install 'ansible>=4,<6'
-
+# 4. Install Ansible.
+pip install 'ansible>=6,<8'
 
 # Install Kolla-ansible
 
@@ -46,8 +43,6 @@ pip install 'ansible>=4,<6'
 pip install --upgrade git+https://github.com/openstack/kolla-ansible.git@stable/$OPENSTACK_RELEASE
 
 pip install python-openstackclient -c https://releases.openstack.org/constraints/upper/$OPENSTACK_RELEASE
-pip install python-designateclient -c https://releases.openstack.org/constraints/upper/$OPENSTACK_RELEASE
-pip install python-masakariclient  -c https://releases.openstack.org/constraints/upper/$OPENSTACK_RELEASE
 pip install python-octaviaclient   -c https://releases.openstack.org/constraints/upper/$OPENSTACK_RELEASE
     
 # 2. Create the /etc/kolla directory.
@@ -78,7 +73,8 @@ EOF
 # generate passwords
 kolla-genpwd
 
-
+# generate certs for octavia
+kolla-ansible octavia-certificates
 
 #
 # This is the static IP we created initially
@@ -100,8 +96,9 @@ neutron_external_interface: "$EXT_IFACE"
 docker_registry: "$MY_REGISTRY"
 docker_registry_insecure: "yes"
 
-
+enable_octavia: "yes"
+octavia_network_type: "tenant"
+octavia_network_interface: "o-hm0"
 EOT
-
 
 
